@@ -16,10 +16,14 @@ import org.json.simple.JSONValue;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
  * Resource which has only one representation.
  */
-public class Main  {
+public class MemeGeneratorApiTool  {
     private static final String DARK_SKY_KEY = "9a049f2369941cc869a7eeb671eb6ad3";
     private static final String FACE_KEY = "qMOd8zA13JD1M7vS9JHZ8ci-h6_tJwbx";
     private static final String MEME_KEY = "demo"; //"81692d7c-a84d-4dc7-aae1-6a85e72481a8";
@@ -34,9 +38,10 @@ public class Main  {
       System.out.println("uri: " + weatherUri);
       String uri = "https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1";
       String memeUri = String.format("http://version1.api.memegenerator.net/Instances_Select_ByPopular?apiKey=%s&days=100&urlName=Y-U-No", MEME_KEY);
+      String topMemeGens = "http://version1.api.memegenerator.net//Generators_Select_ByPopular?pageIndex=&pageSize=25&days=&apiKey=demo";
       System.out.println("memeUri: " + memeUri);
       String musixUri = String.format("http://api.musixmatch.com/ws/1.1/artist.get?artist_id=%d&apikey=%s", 18, MUSIX_KEY);
-      ClientResource resource = new ClientResource(memeUri);
+      ClientResource resource = new ClientResource(topMemeGens);
 
       Representation response = resource.get(MediaType.APPLICATION_JSON);
       String text = response.getText();
@@ -45,5 +50,21 @@ public class Main  {
       //System.out.println(json.get("currently"));
 
     }
+
+  public String popularGenerators() {
+    String topMemeGens = "http://version1.api.memegenerator.net//Generators_Select_ByPopular?pageIndex=&pageSize=25&days=&apiKey=demo";
+    ClientResource resource = new ClientResource(topMemeGens);
+
+      Representation response = resource.get(MediaType.APPLICATION_JSON);
+      try {
+        String text = response.getText();
+        JSONObject json = (JSONObject) JSONValue.parse(text);
+        JSONObject results = (JSONObject) JSONValue.parse(json.get("result").toString());
+        
+        return results.toString();
+      } catch (Exception ex) {
+        return "";
+      }
+  }
 
 }
